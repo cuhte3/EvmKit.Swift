@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-protocol IBlockchain {
+public protocol IBlockchain {
     var delegate: IBlockchainDelegate? { get set }
 
     var source: String { get }
@@ -26,7 +26,7 @@ protocol IBlockchain {
     func fetch<T>(rpcRequest: JsonRpc<T>) async throws -> T
 }
 
-protocol IBlockchainDelegate: AnyObject {
+public protocol IBlockchainDelegate: AnyObject {
     func onUpdate(lastBlockHeight: Int)
     func onUpdate(syncState: SyncState)
     func onUpdate(accountState: AccountState)
