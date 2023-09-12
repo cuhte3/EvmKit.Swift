@@ -149,5 +149,15 @@ extension Chain {
                 isEIP1559Supported: true
         )
     }
+    
+    public static var ethereumPlaynet: Chain {
+        Chain(
+                id: 1337,
+                coinType: 1,
+                syncInterval: 15,
+                gasLimit: 10_000_000,
+                isEIP1559Supported: true
+        )
+    }
 
 }
