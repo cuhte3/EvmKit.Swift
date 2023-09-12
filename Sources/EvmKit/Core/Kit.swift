@@ -15,7 +15,7 @@ public class Kit {
     private let syncStateSubject = PassthroughSubject<SyncState, Never>()
     private let accountStateSubject = PassthroughSubject<AccountState, Never>()
 
-    private let blockchain: IBlockchain
+    public let blockchain: IBlockchain
     private let transactionManager: TransactionManager
     private let transactionSyncManager: TransactionSyncManager
     private let decorationManager: DecorationManager
@@ -248,7 +248,7 @@ extension Kit {
 
 extension Kit: IBlockchainDelegate {
 
-    func onUpdate(lastBlockHeight: Int) {
+    public func onUpdate(lastBlockHeight: Int) {
         guard state.lastBlockHeight != lastBlockHeight else {
             return
         }
@@ -259,7 +259,7 @@ extension Kit: IBlockchainDelegate {
         transactionSyncManager.sync()
     }
 
-    func onUpdate(accountState: AccountState) {
+    public func onUpdate(accountState: AccountState) {
         guard state.accountState != accountState else {
             return
         }
@@ -268,7 +268,7 @@ extension Kit: IBlockchainDelegate {
         accountStateSubject.send(accountState)
     }
 
-    func onUpdate(syncState: SyncState) {
+    public func onUpdate(syncState: SyncState) {
         syncStateSubject.send(syncState)
     }
 
