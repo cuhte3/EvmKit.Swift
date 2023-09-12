@@ -2,6 +2,14 @@ import Foundation
 import BigInt
 import HsToolKit
 
+extension WebSocketRpcSyncer {
+
+    enum RpcError: Error {
+        case cancelled
+    }
+
+}
+
 class WebSocketRpcSyncer {
     struct RpcHandler {
         let onSuccess: (JsonRpcResponse) -> ()
@@ -52,7 +60,7 @@ class WebSocketRpcSyncer {
     private func cancel(rpcId: Int) {
         queue.async {
             let handler = self.rpcHandlers.removeValue(forKey: rpcId)
-            handler?.onError(NetworkManager.TaskError())
+            handler?.onError(RpcError.cancelled)
         }
     }
 
