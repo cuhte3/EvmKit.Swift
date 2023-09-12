@@ -11,11 +11,14 @@ public struct TransactionSource {
         switch type {
         case .etherscan(_, let txBaseUrl, _):
             return "\(txBaseUrl)/tx/\(hash)"
+        case .playnetDevMode:
+            return "/tx/\(hash)"
         }
     }
 
     public enum SourceType {
         case etherscan(apiBaseUrl: String, txBaseUrl: String, apiKey: String)
+        case playnetDevMode(baseUrl: String)
     }
 }
 
@@ -46,6 +49,10 @@ extension TransactionSource {
 
     public static func goerliEtherscan(apiKey: String) -> TransactionSource {
         etherscan(apiSubdomain: "api-goerli", txSubdomain: "goerli", apiKey: apiKey)
+    }
+    
+    public static func playnetDevMode(url: String) -> TransactionSource {
+        TransactionSource(name: "PlaynetDevModel", type: .playnetDevMode(baseUrl: url))
     }
 
     public static func bscscan(apiKey: String) -> TransactionSource {
