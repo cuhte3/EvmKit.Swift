@@ -342,6 +342,8 @@ extension Kit {
         switch transactionSource.type {
         case .etherscan(let apiBaseUrl, _, let apiKey):
             return EtherscanTransactionProvider(baseUrl: apiBaseUrl, apiKey: apiKey, address: address, logger: logger)
+        case .playnetDevMode(let baseUrl):
+            return PlaynetTransactionProvider(baseUrl: baseUrl, address: address, logger: logger)
         }
     }
 
