@@ -35,6 +35,10 @@ extension TransactionSource {
         etherscan(apiSubdomain: "api", txSubdomain: nil, apiKey: apiKey)
     }
 
+    public static func sepoliaEtherscan(apiKey: String) -> TransactionSource {
+        etherscan(apiSubdomain: "api-sepolia", txSubdomain: "sepolia", apiKey: apiKey)
+    }
+
     public static func ropstenEtherscan(apiKey: String) -> TransactionSource {
         etherscan(apiSubdomain: "api-ropsten", txSubdomain: "ropsten", apiKey: apiKey)
     }
@@ -59,6 +63,13 @@ extension TransactionSource {
         TransactionSource(
                 name: "bscscan.com",
                 type: .etherscan(apiBaseUrl: "https://api.bscscan.com", txBaseUrl: "https://bscscan.com", apiKey: apiKey)
+        )
+    }
+
+    public static func bscscanTestNet(apiKey: String) -> TransactionSource {
+        TransactionSource(
+                name: "testnet.bscscan.com",
+                type: .etherscan(apiBaseUrl: "https://api-testnet.bscscan.com", txBaseUrl: "https://testnet.bscscan.com", apiKey: apiKey)
         )
     }
 
