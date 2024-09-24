@@ -153,7 +153,7 @@ extension Chain {
     public static var ethereumPlaynet: Chain {
         Chain(
                 id: 1337,
-                coinType: 1,
+                coinType: 60,
                 syncInterval: 15,
                 gasLimit: 10_000_000,
                 isEIP1559Supported: true
@@ -163,6 +163,15 @@ extension Chain {
     public static var ethereumSepolia: Chain {
         Chain(
                 id: 11155111,
+                coinType: 1,
+                syncInterval: 15,
+                isEIP1559Supported: true
+        )
+    }
+    
+    public static var portal: Chain {
+        Chain(
+                id: 7070,
                 coinType: 1,
                 syncInterval: 15,
                 isEIP1559Supported: true
