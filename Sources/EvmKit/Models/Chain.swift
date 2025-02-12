@@ -146,7 +146,7 @@ public extension Chain {
         )
     }
     
-    public static var ethereumPlaynet: Chain {
+    static var ethereumPlaynet: Chain {
         Chain(
                 id: 1337,
                 coinType: 60,
@@ -166,7 +166,7 @@ public extension Chain {
         )
     }
     
-    public static var portal: Chain {
+    static var portal: Chain {
         Chain(
                 id: 7070,
                 coinType: 1,
@@ -178,7 +178,7 @@ public extension Chain {
     static var ethereumSepolia: Chain {
         Chain(
             id: 11_155_111,
-            coinType: 1,
+            coinType: 60,
             syncInterval: 15,
             isEIP1559Supported: true
         )
