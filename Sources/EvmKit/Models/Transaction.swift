@@ -1,6 +1,6 @@
+import BigInt
 import Foundation
 import GRDB
-import BigInt
 
 public class Transaction: Record {
     public let hash: Data
@@ -43,7 +43,7 @@ public class Transaction: Record {
         super.init()
     }
 
-    public override class var databaseTableName: String {
+    override public class var databaseTableName: String {
         "transactions"
     }
 
@@ -66,14 +66,16 @@ public class Transaction: Record {
         case replacedWith
     }
 
-    required init(row: Row) {
+    required init(row: Row) throws {
         hash = row[Columns.hash]
         timestamp = row[Columns.timestamp]
         isFailed = row[Columns.isFailed]
         blockNumber = row[Columns.blockNumber]
         transactionIndex = row[Columns.transactionIndex]
-        from = row[Columns.from].map { Address(raw: $0) }
-        to = row[Columns.to].map { Address(raw: $0) }
+        let fromRow: Data? = row[Columns.from]
+        from = fromRow.map { Address(raw: $0) }
+        let toRow: Data? = row[Columns.to]
+        to = toRow.map { Address(raw: $0) }
         value = row[Columns.value]
         input = row[Columns.input]
         nonce = row[Columns.nonce]
@@ -84,10 +86,10 @@ public class Transaction: Record {
         gasUsed = row[Columns.gasUsed]
         replacedWith = row[Columns.replacedWith]
 
-        super.init(row: row)
+        try super.init(row: row)
     }
 
-    public override func encode(to container: inout PersistenceContainer) {
+    override public func encode(to container: inout PersistenceContainer) throws {
         container[Columns.hash] = hash
         container[Columns.timestamp] = timestamp
         container[Columns.isFailed] = isFailed
@@ -105,5 +107,4 @@ public class Transaction: Record {
         container[Columns.gasUsed] = gasUsed
         container[Columns.replacedWith] = replacedWith
     }
-
 }
