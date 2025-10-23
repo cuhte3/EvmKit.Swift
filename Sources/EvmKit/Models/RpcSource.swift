@@ -22,6 +22,10 @@ public extension RpcSource {
         .webSocket(url: URL(string: url)!, auth: nil)
     }
     
+    static func ethereumQuickNodeWebsocket(id: String) -> RpcSource {
+        .webSocket(url: URL(string: "wss://tame-neat-dawn.quiknode.pro/\(id)")!, auth: nil)
+    }
+    
     static func ethereumInfuraHttp(projectId: String, projectSecret: String? = nil) -> RpcSource {
         infuraHttp(subdomain: "mainnet", projectId: projectId, projectSecret: projectSecret)
     }
