@@ -14,11 +14,11 @@ public extension RpcSource {
         .webSocket(url: URL(string: "wss://\(subdomain).infura.io/ws/v3/\(projectId)")!, auth: projectSecret)
     }
 
-    public static func portalPlaynet(gethUrl: String) -> RpcSource {
+    static func portalPlaynet(gethUrl: String) -> RpcSource {
         .http(urls: [URL(string: gethUrl)!], auth: nil)
     }
     
-    public static func portalPlaynetWebSocket(url: String) -> RpcSource {
+    static func portalPlaynetWebSocket(url: String) -> RpcSource {
         .webSocket(url: URL(string: url)!, auth: nil)
     }
     

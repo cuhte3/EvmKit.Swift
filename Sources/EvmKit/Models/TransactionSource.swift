@@ -54,7 +54,7 @@ public extension TransactionSource {
         etherscan(apiSubdomain: "api-goerli", txSubdomain: "goerli", apiKeys: apiKeys)
     }
     
-    public static func playnetDevMode(url: String) -> TransactionSource {
+    static func playnetDevMode(url: String) -> TransactionSource {
         TransactionSource(name: "PlaynetDevModel", type: .playnetDevMode(baseUrl: url))
     }
 

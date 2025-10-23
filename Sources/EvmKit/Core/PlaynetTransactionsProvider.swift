@@ -286,9 +286,7 @@ class PlaynetTransactionProvider {
         
         let data = try await callRpcMethod(method: "POST", params: blockRequestParams)
         
-        if let fullBlock = try? JSONDecoder().decode(JSONRPCResult<EthereumBlockInfo>.self, from: data) {
-            print("Received full block: \n \(fullBlock)")
-            
+        if let fullBlock = try? JSONDecoder().decode(JSONRPCResult<EthereumBlockInfo>.self, from: data) {            
             var transactions = [[String: Any]]()
                         
             for transaction in fullBlock.result.transactions {
