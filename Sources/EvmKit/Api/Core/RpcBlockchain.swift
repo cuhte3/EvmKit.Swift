@@ -71,7 +71,7 @@ extension RpcBlockchain: IRpcSyncerDelegate {
     }
 }
 
-extension RpcBlockchain: IBlockchain {
+extension RpcBlockchain: IBlockchain, INonceProvider {
     var source: String {
         "RPC \(syncer.source)"
     }

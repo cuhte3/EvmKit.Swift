@@ -26,7 +26,7 @@ public extension TransactionSource {
     private static func etherscan(apiSubdomain: String, txSubdomain: String?, apiKeys: [String]) -> TransactionSource {
         TransactionSource(
             name: "etherscan.io",
-            type: .etherscan(apiBaseUrl: "https://\(apiSubdomain).etherscan.io", txBaseUrl: "https://\(txSubdomain.map { "\($0)." } ?? "")etherscan.io", apiKeys: apiKeys)
+            type: .etherscan(apiBaseUrl: "https://\(apiSubdomain).etherscan.io/v2", txBaseUrl: "https://\(txSubdomain.map { "\($0)." } ?? "")etherscan.io", apiKeys: apiKeys)
         )
     }
 
@@ -118,6 +118,13 @@ public extension TransactionSource {
         TransactionSource(
             name: "basescan.org",
             type: .etherscan(apiBaseUrl: "https://api.basescan.org", txBaseUrl: "https://basescan.org", apiKeys: apiKeys)
+        )
+    }
+
+    static func eraZkSync(apiKeys: [String]) -> TransactionSource {
+        TransactionSource(
+            name: "era.zksync.network",
+            type: .etherscan(apiBaseUrl: "https://api-era.zksync.network", txBaseUrl: "https://era.zksync.network", apiKeys: apiKeys)
         )
     }
 }

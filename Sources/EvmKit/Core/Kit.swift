@@ -17,6 +17,8 @@ public class Kit {
 
     public let blockchain: IBlockchain
     private let transactionManager: TransactionManager
+    private let nonceProvider: NonceProvider
+
     private let transactionSyncManager: TransactionSyncManager
     private let decorationManager: DecorationManager
     public let eip20Storage: Eip20Storage
@@ -30,12 +32,13 @@ public class Kit {
 
     public let logger: Logger
 
-    init(blockchain: IBlockchain, transactionManager: TransactionManager, transactionSyncManager: TransactionSyncManager,
+    init(blockchain: IBlockchain, nonceProvider: NonceProvider, transactionManager: TransactionManager, transactionSyncManager: TransactionSyncManager,
          state: EvmKitState = EvmKitState(), address: Address, chain: Chain, uniqueId: String,
          transactionProvider: ITransactionProvider, decorationManager: DecorationManager, eip20Storage: Eip20Storage,
          logger: Logger)
     {
         self.blockchain = blockchain
+        self.nonceProvider = nonceProvider
         self.transactionManager = transactionManager
         self.transactionSyncManager = transactionSyncManager
         self.state = state
@@ -153,14 +156,14 @@ public extension Kit {
         if let nonce {
             resolvedNonce = nonce
         } else {
-            resolvedNonce = try await blockchain.nonce(defaultBlockParameter: .pending)
+            resolvedNonce = try await nonceProvider.nonce(defaultBlockParameter: .pending)
         }
 
         return RawTransaction(gasPrice: gasPrice, gasLimit: gasLimit, to: address, value: value, data: transactionInput, nonce: resolvedNonce)
     }
 
     func nonce(defaultBlockParameter: DefaultBlockParameter) async throws -> Int {
-        try await blockchain.nonce(defaultBlockParameter: defaultBlockParameter)
+        try await nonceProvider.nonce(defaultBlockParameter: defaultBlockParameter)
     }
 
     func tagTokens() -> [TagToken] {
@@ -217,6 +220,10 @@ public extension Kit {
         transactionSyncManager.add(syncer: transactionSyncer)
     }
 
+    func add(nonceProvider: INonceProvider) {
+        self.nonceProvider.add(provider: nonceProvider)
+    }
+
     func add(methodDecorator: IMethodDecorator) {
         decorationManager.add(methodDecorator: methodDecorator)
     }
@@ -227,6 +234,10 @@ public extension Kit {
 
     func add(transactionDecorator: ITransactionDecorator) {
         decorationManager.add(transactionDecorator: transactionDecorator)
+    }
+
+    func add(extraDecorator: IExtraDecorator) {
+        decorationManager.add(extraDecorator: extraDecorator)
     }
 
     func decorate(transactionData: TransactionData) -> TransactionDecoration? {
@@ -304,7 +315,7 @@ extension Kit {
         }
 
         let transactionBuilder = TransactionBuilder(chain: chain, address: address)
-        let transactionProvider: ITransactionProvider = transactionProvider(transactionSource: transactionSource, address: address, logger: logger)
+        let transactionProvider: ITransactionProvider = transactionProvider(transactionSource: transactionSource, address: address, chainId: chain.id, logger: logger)
 
         let storage: IApiStorage = try ApiStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "api-\(uniqueId)")
         let blockchain = RpcBlockchain.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, logger: logger)
@@ -321,10 +332,13 @@ extension Kit {
         transactionSyncManager.add(syncer: ethereumTransactionSyncer)
         transactionSyncManager.add(syncer: internalTransactionSyncer)
 
+        let nonceProvider = NonceProvider()
+        nonceProvider.add(provider: blockchain)
+
         let eip20Storage = try Eip20Storage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "eip20-\(uniqueId)")
 
         let kit = Kit(
-            blockchain: blockchain, transactionManager: transactionManager, transactionSyncManager: transactionSyncManager,
+            blockchain: blockchain, nonceProvider: nonceProvider, transactionManager: transactionManager, transactionSyncManager: transactionSyncManager,
             address: address, chain: chain, uniqueId: uniqueId, transactionProvider: transactionProvider, decorationManager: decorationManager,
             eip20Storage: eip20Storage, logger: logger
         )
@@ -336,12 +350,12 @@ extension Kit {
         return kit
     }
 
-    private static func transactionProvider(transactionSource: TransactionSource, address: Address, logger: Logger) -> ITransactionProvider {
+    private static func transactionProvider(transactionSource: TransactionSource, address: Address, chainId: Int, logger: Logger) -> ITransactionProvider {
         switch transactionSource.type {
         case .playnetDevMode(let baseUrl):
             return PlaynetTransactionProvider(baseUrl: baseUrl, address: address, logger: logger)
         case let .etherscan(apiBaseUrl, _, apiKeys):
-            return EtherscanTransactionProvider(baseUrl: apiBaseUrl, apiKeys: apiKeys, address: address, logger: logger)
+            return EtherscanTransactionProvider(baseUrl: apiBaseUrl, apiKeys: apiKeys, address: address, chainId: chainId, logger: logger)
         }
     }
 
@@ -389,11 +403,6 @@ public extension Kit {
 
     static func estimateGas(networkManager: NetworkManager, rpcSource: RpcSource, chain: Chain, from: Address, transactionData: TransactionData, gasPrice: GasPrice) async throws -> Int {
         try await estimateGas(networkManager: networkManager, rpcSource: rpcSource, chain: chain, from: from, to: transactionData.to, amount: transactionData.value, gasPrice: gasPrice, data: transactionData.input)
-    }
-
-    static func nonceSingle(networkManager: NetworkManager, rpcSource: RpcSource, userAddress: Address, defaultBlockParameter: DefaultBlockParameter = .latest) async throws -> Int {
-        let request = GetTransactionCountJsonRpc(address: userAddress, defaultBlockParameter: defaultBlockParameter)
-        return try await RpcBlockchain.call(networkManager: networkManager, rpcSource: rpcSource, rpcRequest: request)
     }
 }
 
