@@ -20,9 +20,14 @@ public struct Chain {
     }
 }
 
-extension Chain: Equatable {
+extension Chain: Hashable, Equatable {
     public static func == (lhs: Chain, rhs: Chain) -> Bool {
         lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(coinType)
     }
 }
 
@@ -109,7 +114,17 @@ public extension Chain {
     static var base: Chain {
         Chain(
             id: 8453,
-            coinType: 60, // actually Optimism has coin type 614
+            coinType: 60,
+            syncInterval: 15,
+            gasLimit: 20_000_000,
+            isEIP1559Supported: true
+        )
+    }
+
+    static var zkSync: Chain {
+        Chain(
+            id: 324,
+            coinType: 60,
             syncInterval: 15,
             gasLimit: 10_000_000,
             isEIP1559Supported: true

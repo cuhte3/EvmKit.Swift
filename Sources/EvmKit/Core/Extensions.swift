@@ -14,3 +14,17 @@ extension BigUInt: DatabaseValueConvertible {
         return nil
     }
 }
+
+func isOptional(_ type: (some Any).Type) -> Bool {
+    type is OptionalProtocol.Type
+}
+
+protocol OptionalProtocol {
+    static var wrappedType: Any.Type { get }
+}
+
+extension Optional: OptionalProtocol {
+    static var wrappedType: Any.Type {
+        Wrapped.self
+    }
+}
